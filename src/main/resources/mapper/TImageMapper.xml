@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linchong.fastdfsmvtool.dao.TImageDao">
+
+	<select id="list" resultType="TImages" parameterType="map">
+		select image_id imageId,image_name imageName,image_titile imageTitile,image_url imageUrl,image_size imageSize,image_ext imageExt,thumbnail_url thumbnailUrl,thumbnail_size thumbnailSize,cration_time crationTime from t_images
+	</select>
+
+	<update id="batchUpdate" parameterType="java.util.List">
+			UPDATE t_images
+			<trim prefix="set" suffixOverrides=",">
+				<trim prefix="image_url = case" suffix="end,">
+					<foreach collection="list" item="i" index="index">
+						<if test="i.imageUrl!=null">
+							when image_id=#{i.imageId} then #{i.imageUrl}
+						</if>
+					</foreach>
+				</trim>
+				<trim prefix="thumbnail_url = case" suffix="end,">
+					<foreach collection="list" item="i" index="index">
+						<if test="i.thumbnailUrl!=null">
+							when image_id=#{i.imageId} then #{i.thumbnailUrl}
+						</if>
+					</foreach>
+				</trim>
+			</trim>
+
+			where
+			<foreach collection="list" separator="or" item="i" index="index" >
+				image_id=#{i.imageId}
+			</foreach>
+	</update>
+
+
+</mapper>
+ 
+
